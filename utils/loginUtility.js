@@ -85,7 +85,8 @@ class LoginUtility {
       // Wait for authentication API response before clicking submit
       const authResponsePromise = this.page.waitForResponse(response =>
         response.url().includes('/authentication/api/v1/user/authenticate') &&
-        response.status() === 200
+        response.status() === 200,
+        { timeout: 30000 }
       );
 
       // Click the submit button

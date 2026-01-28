@@ -52,7 +52,7 @@ module.exports = defineConfig({
       testIgnore: ['**/TC01_login.spec.js', '**/node_modules/**'], // Exclude login test file
       use: {
         browserName: 'chromium',
-        headless: false,
+        headless: true,
         video: 'retain-on-failure',
         baseURL: BASE_URL,
         // Use saved session state if it exists
