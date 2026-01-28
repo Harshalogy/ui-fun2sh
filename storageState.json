@@ -1,0 +1,22 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://148.113.0.204:23810",
+      "localStorage": [
+        {
+          "name": "ncrp.theme",
+          "value": "dark"
+        },
+        {
+          "name": "ncrp-auth-user-records",
+          "value": "[{\"id\":\"inv-001\",\"fullName\":\"NCRP Demo User\",\"email\":\"demo@ncrp.gov\",\"role\":\"ROLE_INVESTIGATION_OFFICER\",\"avatarColor\":\"#5B8DEF\"}]"
+        },
+        {
+          "name": "ncrp.sidebar.state",
+          "value": "{\"collapsed\":false}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+[dotenv@17.2.2] injecting env (12) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+🚀 Running tests on ENV: QA
+🌐 BASE_URL: http://148.113.0.204:23810
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+
+Running 8 tests using 1 worker
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+
+[1A[2K🚀 Running tests on ENV: QA
+
+[1A[2K🌐 BASE_URL: http://148.113.0.204:23810
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+[1A[2K[1/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:28:1 › 1 - Dashboard - Header, Badge, Breadcrumb & Console Errors
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:28:1 › 1 - Dashboard - Header, Badge, Breadcrumb & Console Errors
+✓ storageState.json created
+
+[1A[2K=== TEST 1: DASHBOARD HEADER & BREADCRUMB TEST STARTED ===
+
+[1A[2K  1) [Firefox] › tests/smoke/TC02_dashboard.spec.js:28:1 › 1 - Dashboard - Header, Badge, Breadcrumb & Console Errors 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('app-investigator-dashboard-page .dashboard-badge').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('app-investigator-dashboard-page .dashboard-badge').first()[22m
+
+
+      32 |
+      33 |   // Verify dashboard header elements visibility
+    > 34 |   await expect(dashboardPage.locators.titleBadge).toBeVisible();
+         |                                                   ^
+      35 |   const titleText = await dashboardPage.getTitleBadgeText();
+      36 |   console.log("✅ Dashboard Title Badge visible:", titleText);
+      37 |
+        at /home/sumit/Documents/ncrp_ui_automation/tests/smoke/TC02_dashboard.spec.js:34:51
+
+    Error Context: test-results/smoke-TC02_dashboard-1---D-f8681-e-Breadcrumb-Console-Errors-Firefox/error-context.md
+
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+[1A[2K🚀 Running tests on ENV: QA
+
+[1A[2K🌐 BASE_URL: http://148.113.0.204:23810
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+[1A[2K[2/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:55:1 › 2 - Dashboard - Notifications button & User menu
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:55:1 › 2 - Dashboard - Notifications button & User menu
+✓ storageState.json created
+
+[1A[2K=== TEST 2: NOTIFICATIONS & USER MENU TEST STARTED ===
+
+[1A[2K✅ Notifications Button is visible
+
+[1A[2K✅ Notification Badge count: 5
+
+[1A[2K✅ User Menu Trigger is visible
+
+[1A[2K✅ Logged-in User: ncrp_demo
+
+[1A[2K=== TEST 2: NOTIFICATIONS & USER MENU TEST COMPLETED ===
+
+
+[1A[2K[3/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:79:1 › 3 - Dashboard - Sidebar Navigation & Breadcrumb Back Button
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:79:1 › 3 - Dashboard - Sidebar Navigation & Breadcrumb Back Button
+=== TEST 3: SIDEBAR & BREADCRUMB BACK TEST STARTED ===
+
+[1A[2K✅ Sidebar is visible
+
+[1A[2K✅ Active Dashboard nav item is visible
+
+[1A[2K✅ Sidebar toggle button is visible
+
+[1A[2K✅ Breadcrumb Back Button is visible
+
+[1A[2KBack Button Text: Back
+
+[1A[2KBack Button Icon: arrow_back
+
+[1A[2K=== TEST 3: SIDEBAR & BREADCRUMB BACK TEST COMPLETED ===
+
+
+[1A[2K[4/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:103:1 › 4 - Dashboard - All widgets visible
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:103:1 › 4 - Dashboard - All widgets visible
+=== TEST 4: DASHBOARD WIDGETS VISIBILITY TEST STARTED ===
+
+[1A[2KChecking 7 dashboard widgets...
+
+[1A[2KChecking widget: "Cases"
+
+[1A[2K   Elements found: 0
+
+[1A[2K  2) [Firefox] › tests/smoke/TC02_dashboard.spec.js:103:1 › 4 - Dashboard - All widgets visible ────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m0[39m
+    Received:   [31m0[39m
+
+      113 |     const count = await widgetLocator.count();
+      114 |     console.log(`   Elements found: ${count}`);
+    > 115 |     expect(count).toBeGreaterThan(0);
+          |                   ^
+      116 |     await expect(widgetLocator).toBeVisible({ timeout: 8000 });
+      117 |     console.log(`   ✅ Widget visible: "${widget}"`);
+      118 |   }
+        at /home/sumit/Documents/ncrp_ui_automation/tests/smoke/TC02_dashboard.spec.js:115:19
+
+    Error Context: test-results/smoke-TC02_dashboard-4---Dashboard---All-widgets-visible-Firefox/error-context.md
+
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+[1A[2K🚀 Running tests on ENV: QA
+
+[1A[2K🌐 BASE_URL: http://148.113.0.204:23810
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+[1A[2K[5/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:124:1 › 5 - Dashboard & Sidebar Responsive Validation
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:124:1 › 5 - Dashboard & Sidebar Responsive Validation
+=== TEST 5: RESPONSIVE VALIDATION TEST STARTED ===
+
+[1A[2K
+Testing Tablet viewport: 1024x768
+
+[1A[2KNavigating to http://148.113.0.204:23810...
+
+[1A[2KLogging in as ncrp_demo...
+
+[1A[2KLogin successful!
+
+[1A[2K✅ Login successful
+
+[1A[2Kℹ️ No popup appeared after login
+
+[1A[2K❌ Test failed at Tablet viewport: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+Locator:  locator('app-investigator-dashboard-page .dashboard-badge').first()
+Expected: visible
+Received: <element(s) not found>
+Timeout:  10000ms
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 10000ms[22m
+[2m  - waiting for locator('app-investigator-dashboard-page .dashboard-badge').first()[22m
+
+
+[1A[2K  3) [Firefox] › tests/smoke/TC02_dashboard.spec.js:124:1 › 5 - Dashboard & Sidebar Responsive Validation 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('app-investigator-dashboard-page .dashboard-badge').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('app-investigator-dashboard-page .dashboard-badge').first()[22m
+
+
+      148 |
+      149 |       // Verify key elements are visible in this viewport
+    > 150 |       await expect(dashboardPage.locators.titleBadge).toBeVisible();
+          |                                                       ^
+      151 |       console.log("✅ Dashboard badge visible");
+      152 |
+      153 |       await expect(dashboardPage.locators.sidebarToggle).toBeVisible();
+        at /home/sumit/Documents/ncrp_ui_automation/tests/smoke/TC02_dashboard.spec.js:150:55
+
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+[1A[2K🚀 Running tests on ENV: QA
+
+[1A[2K🌐 BASE_URL: http://148.113.0.204:23810
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+[1A[2K[6/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:170:1 › 6 - Dashboard - Sidebar expand/collapse + spam toggle stability
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:170:1 › 6 - Dashboard - Sidebar expand/collapse + spam toggle stability
+✓ storageState.json created
+
+[1A[2K=== TEST 6: SIDEBAR TOGGLE STABILITY TEST STARTED ===
+
+[1A[2K✅ Sidebar toggle button is visible
+
+[1A[2K✅ Sidebar collapsed
+
+[1A[2K✅ Sidebar expanded
+
+[1A[2KSpamming toggle button 10 times to test stability...
+
+[1A[2K✅ Completed spam-clicking sidebar toggle
+
+[1A[2K✅ Toggle button is still visible
+
+[1A[2K✅ Sidebar is still visible
+
+[1A[2K✅ Non-existent element confirmed not present in DOM
+
+[1A[2K=== TEST 6: SIDEBAR TOGGLE STABILITY TEST COMPLETED ===
+
+
+[1A[2K[7/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:210:1 › 7 - Dashboard - Active Investigator Menu & UI Controls Count & Logging
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:210:1 › 7 - Dashboard - Active Investigator Menu & UI Controls Count & Logging
+=== TEST 7: INVESTIGATOR MENU & UI CONTROLS TEST STARTED ===
+
+[1A[2K  4) [Firefox] › tests/smoke/TC02_dashboard.spec.js:210:1 › 7 - Dashboard - Active Investigator Menu & UI Controls Count & Logging 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('a.nav-item:has-text("Investigator Dashboard")')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('a.nav-item:has-text("Investigator Dashboard")')[22m
+
+
+      212 |   const dashboardPage = new DashboardPage(page);
+      213 |
+    > 214 |   await expect(dashboardPage.locators.investigatorMenu).toBeVisible();
+          |                                                         ^
+      215 |   console.log("✅ Investigator Dashboard menu is visible");
+      216 |
+      217 |   const isActive = await dashboardPage.isInvestigatorMenuActive();
+        at /home/sumit/Documents/ncrp_ui_automation/tests/smoke/TC02_dashboard.spec.js:214:57
+
+    Error Context: test-results/smoke-TC02_dashboard-7---D-59a94-u-UI-Controls-Count-Logging-Firefox/error-context.md
+
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+
+[1A[2K🚀 Running tests on ENV: QA
+
+[1A[2K🌐 BASE_URL: http://148.113.0.204:23810
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+[1A[2K[8/8] [Firefox] › tests/smoke/TC02_dashboard.spec.js:250:1 › 8 - Dashboard - Cases & Balance Pending Sections Validation
+[1A[2K[Firefox] › tests/smoke/TC02_dashboard.spec.js:250:1 › 8 - Dashboard - Cases & Balance Pending Sections Validation
+✓ storageState.json created
+
+[1A[2K=== TEST 8: CASES & BALANCE PENDING SECTIONS VALIDATION STARTED ===
+
+[1A[2K  5) [Firefox] › tests/smoke/TC02_dashboard.spec.js:250:1 › 8 - Dashboard - Cases & Balance Pending Sections Validation 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('.card-grid').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('.card-grid').first()[22m
+
+
+      258 |
+      259 |   // Verify sections are visible
+    > 260 |   await expect(dashboardPage.locators.cardGrid.first()).toBeVisible();
+          |                                                         ^
+      261 |   await expect(dashboardPage.locators.balanceHeading).toBeVisible();
+      262 |
+      263 |   // Get and validate card data
+        at /home/sumit/Documents/ncrp_ui_automation/tests/smoke/TC02_dashboard.spec.js:260:57
+
+    Error Context: test-results/smoke-TC02_dashboard-8---D-1f204-Pending-Sections-Validation-Firefox/error-context.md
+
+
+[1A[2K  5 failed
+    [Firefox] › tests/smoke/TC02_dashboard.spec.js:28:1 › 1 - Dashboard - Header, Badge, Breadcrumb & Console Errors 
+    [Firefox] › tests/smoke/TC02_dashboard.spec.js:103:1 › 4 - Dashboard - All widgets visible ─────
+    [Firefox] › tests/smoke/TC02_dashboard.spec.js:124:1 › 5 - Dashboard & Sidebar Responsive Validation 
+    [Firefox] › tests/smoke/TC02_dashboard.spec.js:210:1 › 7 - Dashboard - Active Investigator Menu & UI Controls Count & Logging 
+    [Firefox] › tests/smoke/TC02_dashboard.spec.js:250:1 › 8 - Dashboard - Cases & Balance Pending Sections Validation 
+  3 passed (1.4m)
+
+[36m  Serving HTML report at http://localhost:40937. Press Ctrl+C to quit.[39m

@@ -1,0 +1,32 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://148.113.0.204:23810",
+      "localStorage": [
+        {
+          "name": "ncrp.theme",
+          "value": "light"
+        },
+        {
+          "name": "ncrp-auth-user-records",
+          "value": "[{\"id\":\"inv-lm\",\"fullName\":\"Leah Martin\",\"email\":\"leah.martin@ncrp.gov\",\"role\":\"Supervisor\",\"avatarColor\":\"#5B8DEF\",\"password\":\"Sentinel!2024!!\",\"passwordUpdatedAt\":1768723867242,\"passwordHistory\":[]},{\"id\":\"inv-aj\",\"fullName\":\"Amir Johnson\",\"email\":\"amir.johnson@ncrp.gov\",\"role\":\"Investigator\",\"avatarColor\":\"#FF8F6B\",\"password\":\"VectorSignal#2030\",\"passwordUpdatedAt\":1768291867242,\"passwordHistory\":[]},{\"id\":\"inv-gc\",\"fullName\":\"Grace Chen\",\"email\":\"grace.chen@ncrp.gov\",\"role\":\"Analyst\",\"avatarColor\":\"#6BCB77\",\"password\":\"ForensicGraph!2040\",\"passwordUpdatedAt\":1767427867242,\"passwordHistory\":[]},{\"id\":\"inv-rs\",\"fullName\":\"Ravi Shah\",\"email\":\"ravi.shah@ncrp.gov\",\"role\":\"Investigator\",\"avatarColor\":\"#F7C948\",\"password\":\"ComplianceLens#2050\",\"passwordUpdatedAt\":1765699867242,\"passwordHistory\":[]}]"
+        },
+        {
+          "name": "ncrp.sidebar.state",
+          "value": "{\"collapsed\":false}"
+        }
+      ],
+      "sessionStorage": [
+        {
+          "name": "authToken",
+          "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOQ1JQLVNFTlRJTkVMIiwic3ViIjoibmNycHRlc3QzIiwidXNlck5hbWUiOiJuY3JwdGVzdDMiLCJ1c2VyRGV0YWlscyI6ImNvbS5pYWN1aXR5LnNlY3VyaXR5LlVzZXJEZXRhaWxzQGI4YzNiODIiLCJhdXRob3JpdGllcyI6WyJST0xFX1NFTklPUiBJTlZFU1RJR0FUSU9OIE9GRklDRVIiXSwiaWF0IjoxNzY5NTg3OTI0LCJleHAiOjE3Njk2MjM5MjR9.Cg-aC2ZeS9-7oRX6Z3VqGPowGZuc0Me3YSGdguIrzCA"
+        },
+        {
+          "name": "userData",
+          "value": "{\"userName\":\"ncrptest3\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJOQ1JQLVNFTlRJTkVMIiwic3ViIjoibmNycHRlc3QzIiwidXNlck5hbWUiOiJuY3JwdGVzdDMiLCJ1c2VyRGV0YWlscyI6ImNvbS5pYWN1aXR5LnNlY3VyaXR5LlVzZXJEZXRhaWxzQGI4YzNiODIiLCJhdXRob3JpdGllcyI6WyJST0xFX1NFTklPUiBJTlZFU1RJR0FUSU9OIE9GRklDRVIiXSwiaWF0IjoxNzY5NTg3OTI0LCJleHAiOjE3Njk2MjM5MjR9.Cg-aC2ZeS9-7oRX6Z3VqGPowGZuc0Me3YSGdguIrzCA\",\"twoWayAuthEnabled\":false,\"status\":\"success\",\"roles\":[\"ROLE_SENIOR_INVESTIGATION_OFFICER\"],\"parentModules\":[],\"childModules\":{}}"
+        }
+      ]
+    }
+  ]
+}
