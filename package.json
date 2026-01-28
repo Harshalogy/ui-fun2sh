@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "npx playwright test",
     "testSmoke": "npx playwright test --grep @smoke",
     "testRegression": "npx playwright test --grep @regression"
   },
