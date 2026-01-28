@@ -39,7 +39,7 @@ module.exports = defineConfig({
       testMatch: '**/TC01_login.spec.js',
       use: {
         browserName: 'chromium',
-        headless: false,
+        headless: true,
         video: 'retain-on-failure',
         baseURL: BASE_URL,
         // No storageState - this test will create and save it
