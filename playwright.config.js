@@ -23,7 +23,44 @@ if (!BASE_URL) {
 const fs = require('fs');
 const path = require('path');
 const authFile = path.join(__dirname, 'auth.json');
-const hasAuthFile = fs.existsSync(authFile);
+
+// Check if auth file exists AND has valid (non-expired) token
+function isAuthFileValid() {
+  try {
+    if (!fs.existsSync(authFile)) return false;
+    
+    const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
+    const sessionStorage = authData.origins?.[0]?.sessionStorage || [];
+    const authTokenObj = sessionStorage.find(item => item.name === 'authToken');
+    
+    if (!authTokenObj) return false;
+    
+    // Decode JWT and check expiration
+    const token = authTokenObj.value;
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    
+    let payload = parts[1];
+    payload += '='.repeat((4 - payload.length % 4) % 4);
+    const decoded = JSON.parse(Buffer.from(payload, 'base64').toString());
+    
+    if (!decoded.exp) return true; // No expiration claim, assume valid
+    
+    const isExpired = Date.now() > (decoded.exp * 1000);
+    if (isExpired) {
+      console.log('⚠ Deleting expired auth.json - will create fresh session');
+      fs.unlinkSync(authFile);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.warn('Error validating auth.json:', error.message);
+    return false;
+  }
+}
+
+const hasAuthFile = isAuthFileValid();
 
 module.exports = defineConfig({
   testDir: './tests',

@@ -5,7 +5,79 @@ const LoginPage = require('../pageObjects/login_page');
 
 class SessionUtility {
   /**
-   * Inject sessionStorage from auth.json (if exists)
+   * Check if JWT token is expired
+   * @param {string} token - JWT token string
+   * @returns {boolean} - true if token is expired, false if valid
+   */
+  static isTokenExpired(token) {
+    try {
+      if (!token) return true;
+      
+      // JWT format: header.payload.signature
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      
+      // Decode payload (add padding if needed)
+      let payload = parts[1];
+      payload += '='.repeat((4 - payload.length % 4) % 4);
+      const decoded = JSON.parse(Buffer.from(payload, 'base64').toString());
+      
+      if (!decoded.exp) return false; // No expiration claim
+      
+      // Check if expired (convert exp to milliseconds)
+      const expirationTime = decoded.exp * 1000;
+      const currentTime = Date.now();
+      const isExpired = currentTime > expirationTime;
+      
+      if (isExpired) {
+        const expiresIn = Math.round((expirationTime - currentTime) / 1000);
+        console.log(`⚠ Token expired ${Math.abs(expiresIn)} seconds ago`);
+      }
+      
+      return isExpired;
+    } catch (error) {
+      console.warn('Could not parse token:', error.message);
+      return true; // Assume expired if we can't parse it
+    }
+  }
+
+  /**
+   * Check if auth.json exists and has valid (non-expired) token
+   * @param {string} authFile - Path to auth.json
+   * @returns {boolean} - true if auth file exists and token is valid
+   */
+  static isAuthFileValid(authFile) {
+    try {
+      if (!fs.existsSync(authFile)) {
+        console.log('⚠ auth.json not found');
+        return false;
+      }
+      
+      const authData = JSON.parse(fs.readFileSync(authFile, 'utf8'));
+      const sessionStorage = authData.origins?.[0]?.sessionStorage || [];
+      const authTokenObj = sessionStorage.find(item => item.name === 'authToken');
+      
+      if (!authTokenObj) {
+        console.log('⚠ authToken not found in auth.json');
+        return false;
+      }
+      
+      const isExpired = this.isTokenExpired(authTokenObj.value);
+      if (isExpired) {
+        console.log('⚠ Stored token in auth.json is expired');
+        return false;
+      }
+      
+      console.log('✓ auth.json exists and token is valid');
+      return true;
+    } catch (error) {
+      console.warn('Error validating auth.json:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Inject sessionStorage from auth.json (if exists and valid)
    * @param {Page} page - Playwright page object
    * @returns {Promise<void>}
    */
