@@ -53,17 +53,17 @@ test.describe(`Reports Tab E2E - IO User (Data-Dependent)`, () => {
     page = await context.newPage();
 
     testInfo.reportDownloadPath = path.join(testInfo.outputDir, 'downloads');
-    
+
     if (!fs.existsSync(testInfo.reportDownloadPath)) {
       fs.mkdirSync(testInfo.reportDownloadPath, { recursive: true });
     }
 
     // Inject session storage from IO auth file
     await SessionUtility.injectSessionStorage(page, 'auth.json');
-    
+
     // Navigate to IO dashboard with session
     await page.goto(ROLE_ROUTE['IO'], { waitUntil: 'networkidle', timeout: 30000 });
-    
+
     // Wait for page to be ready
     await expect(page.locator('text=/dashboard|reports|case/i').first()).toBeVisible({ timeout: 10000 });
 
@@ -78,321 +78,326 @@ test.describe(`Reports Tab E2E - IO User (Data-Dependent)`, () => {
     await page.context().close();
   });
 
-// ============================================================================
-// UTILITY FUNCTIONS - OPTIMIZED
-// ============================================================================
+  // ============================================================================
+  // UTILITY FUNCTIONS - OPTIMIZED
+  // ============================================================================
 
-async function waitForPageReady(page, timeout = 15000) {
-  try {
-    await page.waitForLoadState('networkidle', { timeout });
-  } catch {
-    // Continue if network idle fails
+  async function waitForPageReady(page, timeout = 15000) {
+    try {
+      await page.waitForLoadState('networkidle', { timeout });
+    } catch {
+      // Continue if network idle fails
+    }
+    await page.waitForTimeout(500);
   }
-  await page.waitForTimeout(500);
-}
 
-async function navigateToReportsTab(page) {
-  const currentUrl = page.url();
-  console.log('Current URL:', currentUrl);
-  
-  // Already on reports page
-  if (currentUrl.includes('/reports')) {
-    console.log('✓ Already on Reports page');
-    return;
-  }
-  
-  // On case details page - click Reports nav
-  if (currentUrl.includes('case-details')) {
-    const reportsNav = page.locator('[role="menuitem"]').filter({ hasText: 'Reports' });
-    if (await reportsNav.count() > 0) {
-      await reportsNav.click({ timeout: 5000 });
-      console.log('✓ Navigated to Reports tab from case details');
-      await waitForPageReady(page, 10000);
+  async function navigateToReportsTab(page) {
+    const currentUrl = page.url();
+    console.log('Current URL:', currentUrl);
+
+    // Already on reports page
+    if (currentUrl.includes('/reports')) {
+      console.log('✓ Already on Reports page');
       return;
     }
-  }
-  
-  // On dashboard - select second case and navigate to Reports
-  if (currentUrl.includes('dashboard')) {
-    console.log('✓ On Dashboard, navigating to Reports via case');
-    
-    const rows = page.locator('tbody tr, [role="row"]');
-    const rowCount = await rows.count();
-    
-    if (rowCount < 2) {
-      throw new Error(`Not enough cases. Found: ${rowCount} (need at least 2)`);
+
+    // On case details page - click Reports nav
+    if (currentUrl.includes('case-details')) {
+      const reportsNav = page.locator('[role="menuitem"]').filter({ hasText: 'Reports' });
+      if (await reportsNav.count() > 0) {
+        await reportsNav.click({ timeout: 5000 });
+        console.log('✓ Navigated to Reports tab from case details');
+        await waitForPageReady(page, 10000);
+        return;
+      }
     }
-    
-    const secondRow = rows.nth(1);
-    const caseCell = secondRow.locator('td, [role="cell"]').nth(1);
-    const caseName = await caseCell.textContent();
-    
-    console.log(`Selecting case: ${caseName?.trim()}`);
-    
-    // Click the main case link (io-case-link, not io-case-link-sub)
-    const caseLink = caseCell.locator('a.io-case-link').first();
-    await caseLink.waitFor({ state: 'visible', timeout: 10000 });
-    console.log('Clicking case link...');
-    await caseLink.click({ timeout: 15000 });
-    
-    console.log('Waiting for case-details URL...');
-    await page.waitForURL(/case-details/, { timeout: 20000 }).catch((e) => console.log('URL wait error:', e.message));
-    
-    console.log('Waiting for page to be ready...');
-    await waitForPageReady(page, 10000);
-    
-    // Click Reports
-    console.log('Looking for Reports button...');
-    const reportsBtn = page.locator('[role="menuitem"]').filter({ hasText: 'Reports' });
-    const reportsBtnCount = await reportsBtn.count();
-    console.log(`Found ${reportsBtnCount} Reports button(s)`);
-    
-    if (reportsBtnCount > 0) {
-      console.log('Clicking Reports button...');
-      await reportsBtn.click({ timeout: 5000 });
-      console.log('Waiting for Reports page to be ready...');
+
+    // On dashboard - select second case and navigate to Reports
+    if (currentUrl.includes('dashboard')) {
+      console.log('✓ On Dashboard, navigating to Reports via case');
+
+      const searchInput = page.locator('input.io-search-input');
+      await searchInput.click();
+      await searchInput.fill('');
+      await searchInput.type('mpcy', { delay: 100 });
+
+      const rows = page.locator('tbody tr, [role="row"]');
+      const rowCount = await rows.count();
+
+      if (rowCount < 2) {
+        throw new Error(`Not enough cases. Found: ${rowCount} (need at least 2)`);
+      }
+
+      const secondRow = rows.nth(1);
+      const caseCell = secondRow.locator('td, [role="cell"]').nth(1);
+      const caseName = await caseCell.textContent();
+
+      console.log(`Selecting case: ${caseName?.trim()}`);
+
+      // Click the main case link (io-case-link, not io-case-link-sub)
+      const caseLink = caseCell.locator('a.io-case-link').first();
+      await caseLink.waitFor({ state: 'visible', timeout: 10000 });
+      console.log('Clicking case link...');
+      await caseLink.click({ timeout: 15000 });
+
+      console.log('Waiting for case-details URL...');
+      await page.waitForURL(/case-details/, { timeout: 20000 }).catch((e) => console.log('URL wait error:', e.message));
+
+      console.log('Waiting for page to be ready...');
       await waitForPageReady(page, 10000);
-      console.log('✓ Successfully navigated to Reports');
-    }
-    return;
-  }
-  
-  throw new Error(`Unexpected page URL: ${currentUrl}`);
-}
 
-async function getCurrentUsername(page) {
-  try {
-    // Try from localStorage first (more reliable)
-    const user = await page.evaluate(() => {
+      // Click Reports
+      console.log('Looking for Reports button...');
+      const reportsBtn = page.locator('[role="menuitem"]').filter({ hasText: 'Reports' });
+      const reportsBtnCount = await reportsBtn.count();
+      console.log(`Found ${reportsBtnCount} Reports button(s)`);
+
+      if (reportsBtnCount > 0) {
+        console.log('Clicking Reports button...');
+        await reportsBtn.click({ timeout: 5000 });
+        console.log('Waiting for Reports page to be ready...');
+        await waitForPageReady(page, 10000);
+        console.log('✓ Successfully navigated to Reports');
+      }
+      return;
+    }
+
+    throw new Error(`Unexpected page URL: ${currentUrl}`);
+  }
+
+  async function getCurrentUsername(page) {
+    try {
+      // Try from localStorage first (more reliable)
+      const user = await page.evaluate(() => {
+        try {
+          return localStorage.getItem('currentUser') ||
+            localStorage.getItem('user') ||
+            sessionStorage.getItem('user');
+        } catch {
+          return null;
+        }
+      });
+
+      if (user) return user;
+
+      // Try DOM element
+      const userElement = page.locator('.user-menu__name, [data-testid="username"]').first();
+      if (await userElement.count() > 0) {
+        return (await userElement.innerText()).trim();
+      }
+
+      return 'unknown';
+    } catch {
+      return 'unknown';
+    }
+  }
+
+  async function getDropdownOptions(page, dropdown) {
+    try {
+      await dropdown.click({ timeout: 3000 });
+      await page.waitForTimeout(300);
+
+      const options = await page.locator('mat-option, [role="option"]').allTextContents();
+      const cleaned = options.map(o => o.trim()).filter(o => o.length > 0);
+
+      console.log(`Dropdown options: [${cleaned.join(', ')}]`);
+      await page.press('Escape').catch(() => { });
+
+      return cleaned;
+    } catch (e) {
+      console.warn(`⚠ Error reading dropdown: ${e.message}`);
+      return [];
+    }
+  }
+
+  async function waitForLoaderToDisappear(page, timeout = 10000) {
+    const spinner = page.locator('[class*="load"], [class*="spin"], .spinner').first();
+    let attempts = 0;
+    const maxAttempts = Math.ceil(timeout / 200);
+
+    while ((await spinner.count()) > 0 && attempts < maxAttempts) {
+      await page.waitForTimeout(200);
+      attempts++;
+    }
+  }
+
+  async function waitForReportStatus(
+    page,
+    username,
+    targetStatus = 'Completed',
+    timeoutMs = REPORT_STATUS_POLL_TIMEOUT
+  ) {
+    const startTime = Date.now();
+    const locators = new IOReportsLocators(page);
+    let pollCount = 0;
+    const reloadInterval = 5; // Reload every 5 polls (every ~10 seconds)
+
+    while (Date.now() - startTime < timeoutMs) {
       try {
-        return localStorage.getItem('currentUser') || 
-               localStorage.getItem('user') ||
-               sessionStorage.getItem('user');
-      } catch {
-        return null;
-      }
-    });
-    
-    if (user) return user;
-    
-    // Try DOM element
-    const userElement = page.locator('.user-menu__name, [data-testid="username"]').first();
-    if (await userElement.count() > 0) {
-      return (await userElement.innerText()).trim();
-    }
-    
-    return 'unknown';
-  } catch {
-    return 'unknown';
-  }
-}
+        pollCount++;
 
-async function getDropdownOptions(page, dropdown) {
-  try {
-    await dropdown.click({ timeout: 3000 });
-    await page.waitForTimeout(300);
-    
-    const options = await page.locator('mat-option, [role="option"]').allTextContents();
-    const cleaned = options.map(o => o.trim()).filter(o => o.length > 0);
-    
-    console.log(`Dropdown options: [${cleaned.join(', ')}]`);
-    await page.press('Escape').catch(() => {});
-    
-    return cleaned;
-  } catch (e) {
-    console.warn(`⚠ Error reading dropdown: ${e.message}`);
-    return [];
-  }
-}
+        // Reload page every 10 seconds to get fresh data
+        if (pollCount % reloadInterval === 0) {
+          console.log(`[Reload #${Math.floor(pollCount / reloadInterval)}] Refreshing page to get latest status...`);
+          await page.reload({ waitUntil: 'networkidle' }).catch((e) => {
+            console.log(`Reload error: ${e.message}`);
+          });
+          await page.waitForTimeout(1000);
+        }
 
-async function waitForLoaderToDisappear(page, timeout = 10000) {
-  const spinner = page.locator('[class*="load"], [class*="spin"], .spinner').first();
-  let attempts = 0;
-  const maxAttempts = Math.ceil(timeout / 200);
-  
-  while ((await spinner.count()) > 0 && attempts < maxAttempts) {
-    await page.waitForTimeout(200);
-    attempts++;
-  }
-}
+        const allRows = locators.tableRows;
+        const totalRows = await allRows.count();
 
-async function waitForReportStatus(
-  page,
-  username,
-  targetStatus = 'Completed',
-  timeoutMs = REPORT_STATUS_POLL_TIMEOUT
-) {
-  const startTime = Date.now();
-  const locators = new IOReportsLocators(page);
-  let pollCount = 0;
-  const reloadInterval = 5; // Reload every 5 polls (every ~10 seconds)
+        if (totalRows === 0) {
+          console.log('No rows in table, waiting...');
+          await page.waitForTimeout(POLL_INTERVAL);
+          continue;
+        }
 
-  while (Date.now() - startTime < timeoutMs) {
-    try {
-      pollCount++;
-      
-      // Reload page every 10 seconds to get fresh data
-      if (pollCount % reloadInterval === 0) {
-        console.log(`[Reload #${Math.floor(pollCount / reloadInterval)}] Refreshing page to get latest status...`);
-        await page.reload({ waitUntil: 'networkidle' }).catch((e) => {
-          console.log(`Reload error: ${e.message}`);
-        });
-        await page.waitForTimeout(1000);
-      }
+        // Get the last row (latest submission)
+        const lastRowIndex = totalRows - 1;
+        const lastRow = allRows.nth(lastRowIndex);
+        const lastRowText = await lastRow.innerText();
 
-      const allRows = locators.tableRows;
-      const totalRows = await allRows.count();
+        // Verify row belongs to this user
+        if (!lastRowText.includes(username)) {
+          console.log(`Last row not for user ${username}, waiting...`);
+          await page.waitForTimeout(POLL_INTERVAL);
+          continue;
+        }
 
-      if (totalRows === 0) {
-        console.log('No rows in table, waiting...');
+        // Status is in cell 2 (3rd column)
+        const statusCell = lastRow.locator('td, [role="cell"]').nth(2);
+        const statusText = await statusCell.innerText();
+
+        const elapsedSecs = Math.round((Date.now() - startTime) / 1000);
+        console.log(`[${elapsedSecs}s] Status: ${statusText}`);
+
+        if (statusText.includes(targetStatus)) {
+          console.log(`✓ Report completed: ${statusText}`);
+          return { rowIndex: lastRowIndex, status: statusText };
+        }
+
         await page.waitForTimeout(POLL_INTERVAL);
-        continue;
-      }
-
-      // Get the last row (latest submission)
-      const lastRowIndex = totalRows - 1;
-      const lastRow = allRows.nth(lastRowIndex);
-      const lastRowText = await lastRow.innerText();
-
-      // Verify row belongs to this user
-      if (!lastRowText.includes(username)) {
-        console.log(`Last row not for user ${username}, waiting...`);
+      } catch (e) {
+        console.log(`Poll error: ${e.message}`);
         await page.waitForTimeout(POLL_INTERVAL);
-        continue;
       }
+    }
 
-      // Status is in cell 2 (3rd column)
-      const statusCell = lastRow.locator('td, [role="cell"]').nth(2);
-      const statusText = await statusCell.innerText();
+    throw new Error(
+      `Timeout waiting for report status '${targetStatus}' after ${Math.round((Date.now() - startTime) / 1000)}s`
+    );
+  }
 
-      const elapsedSecs = Math.round((Date.now() - startTime) / 1000);
-      console.log(`[${elapsedSecs}s] Status: ${statusText}`);
+  async function downloadFile(page, downloadPath, downloadButton) {
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const [download] = await Promise.race([
+          Promise.all([
+            page.waitForEvent('download', { timeout: 30000 }),
+            downloadButton.click({ timeout: 5000 })
+          ]),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Download timeout')), 35000))
+        ]);
 
-      if (statusText.includes(targetStatus)) {
-        console.log(`✓ Report completed: ${statusText}`);
-        return { rowIndex: lastRowIndex, status: statusText };
+        const targetPath = path.join(downloadPath, download.suggestedFilename);
+        await download.saveAs(targetPath);
+        await page.waitForTimeout(500);
+
+        console.log(`✓ Downloaded: ${download.suggestedFilename}`);
+        return targetPath;
+      } catch (e) {
+        console.warn(`Download attempt ${attempt + 1} failed: ${e.message}`);
+        if (attempt < MAX_RETRIES - 1) {
+          await page.waitForTimeout(RETRY_DELAY);
+        } else {
+          throw new Error(`Failed to download after ${MAX_RETRIES} attempts: ${e.message}`);
+        }
       }
-
-      await page.waitForTimeout(POLL_INTERVAL);
-    } catch (e) {
-      console.log(`Poll error: ${e.message}`);
-      await page.waitForTimeout(POLL_INTERVAL);
     }
   }
 
-  throw new Error(
-    `Timeout waiting for report status '${targetStatus}' after ${Math.round((Date.now() - startTime) / 1000)}s`
-  );
-}
+  async function validateDownloadedFile(filePath) {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Downloaded file not found at: ${filePath}`);
+    }
 
-async function downloadFile(page, downloadPath, downloadButton) {
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const stats = fs.statSync(filePath);
+    if (stats.size === 0) {
+      throw new Error('Downloaded file is empty');
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+
+    if (ext === '.csv' || ext === '.tsv') {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const lines = content.split('\n').filter(line => line.trim().length > 0);
+      if (lines.length < 2) {
+        throw new Error('CSV file has less than 2 rows (header + data)');
+      }
+      return { type: 'csv', rows: lines.length, fileSize: stats.size };
+    }
+
+    if (ext === '.xlsx') {
+      const ExcelJS = require('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+
+      if (workbook.worksheets.length === 0) {
+        throw new Error('XLSX file has no worksheets');
+      }
+
+      const worksheet = workbook.worksheets[0];
+      const rowCount = worksheet.rowCount || 0;
+
+      if (rowCount < 2) {
+        throw new Error('XLSX file has less than 2 rows');
+      }
+
+      return { type: 'xlsx', rows: rowCount, sheets: workbook.worksheets.length, fileSize: stats.size };
+    }
+
+    if (ext === '.pdf') {
+      const buffer = fs.readFileSync(filePath);
+      const pdfHeader = buffer.toString('utf-8', 0, 4);
+      if (!pdfHeader.includes('%PDF')) {
+        throw new Error('Invalid PDF file');
+      }
+      return { type: 'pdf', fileSize: stats.size };
+    }
+
+    return { type: ext.replace('.', ''), fileSize: stats.size };
+  }
+
+  async function getLogTableCellText(ioLocators, rowIndex, colIndex) {
     try {
-      const [download] = await Promise.race([
-        Promise.all([
-          page.waitForEvent('download', { timeout: 30000 }),
-          downloadButton.click({ timeout: 5000 })
-        ]),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Download timeout')), 35000))
-      ]);
-
-      const targetPath = path.join(downloadPath, download.suggestedFilename);
-      await download.saveAs(targetPath);
-      await page.waitForTimeout(500);
-      
-      console.log(`✓ Downloaded: ${download.suggestedFilename}`);
-      return targetPath;
+      return await ioLocators.getLogTableCell(rowIndex, colIndex).innerText();
     } catch (e) {
-      console.warn(`Download attempt ${attempt + 1} failed: ${e.message}`);
-      if (attempt < MAX_RETRIES - 1) {
-        await page.waitForTimeout(RETRY_DELAY);
-      } else {
-        throw new Error(`Failed to download after ${MAX_RETRIES} attempts: ${e.message}`);
+      return '';
+    }
+  }
+
+  // ============================================================================
+  // HELPER: Skip test if data unavailable
+  // ============================================================================
+
+  async function skipIfNoData(page, testName) {
+    try {
+      const ioLocators = new IOReportsLocators(page);
+      const ackDropdown = ioLocators.ackNumberDropdown;
+      const isDisabled = await ackDropdown.isDisabled().catch(() => true);
+
+      if (isDisabled) {
+        console.log(`⏭️  ${testName}: SKIPPED - No ACK numbers available for IO user`);
+        return true;
       }
-    }
-  }
-}
-
-async function validateDownloadedFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Downloaded file not found at: ${filePath}`);
-  }
-
-  const stats = fs.statSync(filePath);
-  if (stats.size === 0) {
-    throw new Error('Downloaded file is empty');
-  }
-
-  const ext = path.extname(filePath).toLowerCase();
-  
-  if (ext === '.csv' || ext === '.tsv') {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lines = content.split('\n').filter(line => line.trim().length > 0);
-    if (lines.length < 2) {
-      throw new Error('CSV file has less than 2 rows (header + data)');
-    }
-    return { type: 'csv', rows: lines.length, fileSize: stats.size };
-  }
-  
-  if (ext === '.xlsx') {
-    const ExcelJS = require('exceljs');
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(filePath);
-    
-    if (workbook.worksheets.length === 0) {
-      throw new Error('XLSX file has no worksheets');
-    }
-    
-    const worksheet = workbook.worksheets[0];
-    const rowCount = worksheet.rowCount || 0;
-    
-    if (rowCount < 2) {
-      throw new Error('XLSX file has less than 2 rows');
-    }
-    
-    return { type: 'xlsx', rows: rowCount, sheets: workbook.worksheets.length, fileSize: stats.size };
-  }
-  
-  if (ext === '.pdf') {
-    const buffer = fs.readFileSync(filePath);
-    const pdfHeader = buffer.toString('utf-8', 0, 4);
-    if (!pdfHeader.includes('%PDF')) {
-      throw new Error('Invalid PDF file');
-    }
-    return { type: 'pdf', fileSize: stats.size };
-  }
-
-  return { type: ext.replace('.', ''), fileSize: stats.size };
-}
-
-async function getLogTableCellText(ioLocators, rowIndex, colIndex) {
-  try {
-    return await ioLocators.getLogTableCell(rowIndex, colIndex).innerText();
-  } catch (e) {
-    return '';
-  }
-}
-
-// ============================================================================
-// HELPER: Skip test if data unavailable
-// ============================================================================
-
-async function skipIfNoData(page, testName) {
-  try {
-    const ioLocators = new IOReportsLocators(page);
-    const ackDropdown = ioLocators.ackNumberDropdown;
-    const isDisabled = await ackDropdown.isDisabled().catch(() => true);
-    
-    if (isDisabled) {
-      console.log(`⏭️  ${testName}: SKIPPED - No ACK numbers available for IO user`);
+      return false;
+    } catch (e) {
+      console.log(`⏭️  ${testName}: SKIPPED - Error checking data: ${e.message}`);
       return true;
     }
-    return false;
-  } catch (e) {
-    console.log(`⏭️  ${testName}: SKIPPED - Error checking data: ${e.message}`);
-    return true;
   }
-}
 
   // ========== IO TC01: Login & Reports Tab Structure ===========
   test('IO TC01 - Login and Reports Tab UI structure', async () => {
@@ -404,7 +409,7 @@ async function skipIfNoData(page, testName) {
     }
 
     const locators = new IOReportsLocators(page);
-    
+
     // TC01: Verify on Reports page
     expect(page.url()).toContain('/reports');
     await locators.caseNameLabel.waitFor({ state: 'visible' });
@@ -489,7 +494,7 @@ async function skipIfNoData(page, testName) {
     await locators.submitRequestBtn.click();
     console.log('✓ Clicked Submit Request button');
     await page.waitForTimeout(2000);
-    
+
     const headerTexts = await locators.tableHeaders.allTextContents();
     const headerString = headerTexts.join('|').toLowerCase();
     expect(headerString).toContain('requested by');
@@ -539,13 +544,13 @@ async function skipIfNoData(page, testName) {
       // Submit request
       await locators.submitRequestBtn.click();
       await page.waitForTimeout(2000);
-      
+
       // Open progress modal
       await locators.viewProgressBtn.click();
       await page.waitForTimeout(1500);
 
       // TC09: Verify modal structure
-      await locators.modalTitle.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+      await locators.modalTitle.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
       const logRowCount = await locators.logTableRows.count();
       expect(logRowCount).toBeGreaterThanOrEqual(0);
       console.log(`✓ TC09: Modal opened with ${logRowCount} log entries`);
@@ -562,7 +567,7 @@ async function skipIfNoData(page, testName) {
       } catch (e) {
         await page.press('Escape');
       }
-      
+
       await page.waitForTimeout(500);
       const url = page.url();
       expect(url).toContain('/reports');
@@ -650,7 +655,7 @@ async function skipIfNoData(page, testName) {
         await page.waitForTimeout(1000);
 
         const deleteConfirmDialog = page.locator('dialog, mat-dialog-container, [role="dialog"]').first();
-        await deleteConfirmDialog.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+        await deleteConfirmDialog.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
         console.log('✓ TC14: Delete button triggered confirmation dialog');
       } else {
         console.log('⚠ TC14: Delete button not found');
@@ -682,7 +687,7 @@ async function skipIfNoData(page, testName) {
       await page.waitForTimeout(1500);
 
       // Wait for modal and get log entries
-      await locators.progressModal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+      await locators.progressModal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { });
       await page.waitForTimeout(1000); // Allow time for logs to populate
 
       const finalLogRowCount = await locators.logTableRows.count();
